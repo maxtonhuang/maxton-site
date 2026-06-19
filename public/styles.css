@@ -623,10 +623,32 @@ img { max-width: 100%; display: block; }
 }
 .reveal.in-view { opacity: 1; transform: none; }
 
+/* Granular, directional, staggered reveals ([data-reveal]) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 760ms ease, transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--rd, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal="left"]     { transform: translateX(-46px); }
+[data-reveal="right"]    { transform: translateX(46px); }
+[data-reveal="scale"]    { transform: scale(0.86); }
+/* "assemble" — pieces snap into place from an offset, rotated, scaled-down state */
+[data-reveal="assemble"] { transform: translateY(52px) scale(0.9) rotate(-3.5deg); }
+[data-reveal].is-revealed { opacity: 1; transform: none; }
+
+/* Decode / scramble text effect */
+.scramble-char {
+  color: var(--accent-2);
+  opacity: 0.85;
+}
+
 /* ------------------------- Reduced motion ----------------------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
   .hero__scroll, .hero__status-dot, .hero__name-text { animation: none; }
   .cursor-glow { display: none; }
   *, *::before, *::after {
