@@ -26,6 +26,7 @@
   var heroScrollProgress = 0;
   var scrollY = window.scrollY || 0;
   var nmx = 0, nmy = 0;
+  var gravX = 0, gravY = 0, tiltOn = false; // gyroscope "gravity" shared with the confetti
 
   /* ---- Footer year ---- */
   var yearEl = document.getElementById("year");
@@ -241,7 +242,7 @@
     if (!canvas) return;
     var ctx; try { ctx = canvas.getContext("2d"); } catch (e) { return; }
     if (!ctx) return;
-    var w = 0, h = 0, dpr = 1, parts = [];
+    var w = 0, h = 0, dpr = 1, parts = [], lastT = 0;
 
     function build() {
       var count = Math.min(reduceMotion ? 42 : 100, Math.round((w * h) / 15000));
@@ -282,15 +283,26 @@
       }
       ctx.restore(); ctx.globalAlpha = 1;
     }
+    var GRAV = 170, MARGIN = 60;
+    function place(base, off, size) { var W = size + MARGIN * 2; return wrap(base + off + MARGIN, W) - MARGIN; }
     function render(t) {
+      var dt = lastT ? Math.min(60, t - lastT) / 1000 : 0.016; lastT = t;
       ctx.clearRect(0, 0, w, h);
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i];
-        var fy = reduceMotion ? 0 : t * 0.001 * p.spd;
-        var sx = reduceMotion ? 0 : Math.sin(t * 0.001 * p.swSpeed + p.swPhase) * p.sway;
-        var x = wrap(p.x + sx + nmx * p.par * 90, w + 80) - 40;
-        var y = wrap(p.y - fy - scrollY * p.par + nmy * p.par * 80, h + 80) - 40;
-        shape(p, x, y, t);
+        var vx, vy;
+        if (tiltOn) {                              // gyroscope gravity — particles stream downhill
+          vx = gravX * GRAV * (0.45 + p.par);
+          vy = gravY * GRAV * (0.45 + p.par);
+        } else {
+          vx = 0; vy = -(p.spd * 1.3);             // idle: gentle float upward
+        }
+        if (!reduceMotion) vx += Math.cos(t * 0.001 * p.swSpeed + p.swPhase) * (tiltOn ? 6 : p.sway * 0.5);
+        p.x += vx * dt; p.y += vy * dt;
+        p.x = wrap(p.x, w); p.y = wrap(p.y, h);
+        var ox = tiltOn ? 0 : nmx * p.par * 60;    // mouse parallax only when not tilting
+        var oy = -scrollY * p.par + (tiltOn ? 0 : nmy * p.par * 50);
+        shape(p, place(p.x, ox, w), place(p.y, oy, h), t);
       }
     }
     var running = false, rafId = 0;
@@ -488,17 +500,17 @@
     var on = false;
 
     function apply(gx, gy) {
-      nmx = gx; nmy = gy; // drives the confetti + globe canvases (when animating)
-      if (bgMesh) bgMesh.style.transform = "translate3d(" + (gx * 34).toFixed(1) + "px," + (gy * 34).toFixed(1) + "px,0)"; // moves the colourful blobs (always visible)
+      nmx = gx; nmy = gy; gravX = gx; gravY = gy; // globe rotation + confetti gravity
+      if (bgMesh) bgMesh.style.transform = "translate3d(" + (gx * 34).toFixed(1) + "px," + (gy * 34).toFixed(1) + "px,0)"; // shifts the colourful blobs (visible even during scroll pauses)
     }
     function onOrient(e) {
       if (e.gamma == null && e.beta == null) return;
-      var gx = Math.max(-1, Math.min(1, (e.gamma || 0) / 35));        // left-right tilt
-      var gy = Math.max(-1, Math.min(1, ((e.beta || 0) - 40) / 35));  // front-back tilt
-      apply(gx * 0.9, gy * 0.9);
+      var gx = Math.sin((e.gamma || 0) * Math.PI / 180);  // screen-plane gravity X (left-right tilt)
+      var gy = Math.sin((e.beta || 0) * Math.PI / 180);   // screen-plane gravity Y (up-down tilt)
+      apply(Math.max(-1, Math.min(1, gx)), Math.max(-1, Math.min(1, gy)));
     }
-    function start() { window.addEventListener("deviceorientation", onOrient, true); on = true; }
-    function stop() { window.removeEventListener("deviceorientation", onOrient, true); on = false; apply(0, 0); }
+    function start() { window.addEventListener("deviceorientation", onOrient, true); on = true; tiltOn = true; }
+    function stop() { window.removeEventListener("deviceorientation", onOrient, true); on = false; tiltOn = false; apply(0, 0); }
 
     var btn = null;
     if (fabStack) {
