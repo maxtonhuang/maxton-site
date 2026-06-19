@@ -257,7 +257,8 @@
           spd: 5 + Math.random() * 15,
           sway: 12 + Math.random() * 30, swPhase: Math.random() * 6.28, swSpeed: 0.3 + Math.random() * 0.7,
           rot: Math.random() * 6.28, rotSpeed: (Math.random() - 0.5) * 0.6,
-          par: 0.08 + depth * 0.5, alpha: 0.45 + Math.random() * 0.4
+          par: 0.08 + depth * 0.5, alpha: 0.45 + Math.random() * 0.4,
+          vx: 0, vy: 0
         });
       }
     }
@@ -283,24 +284,28 @@
       }
       ctx.restore(); ctx.globalAlpha = 1;
     }
-    var GRAV = 170, MARGIN = 60;
+    var ACC = 2000, TERM = 950, MARGIN = 60;
     function place(base, off, size) { var W = size + MARGIN * 2; return wrap(base + off + MARGIN, W) - MARGIN; }
     function render(t) {
       var dt = lastT ? Math.min(60, t - lastT) / 1000 : 0.016; lastT = t;
+      var drag = Math.exp(-2.4 * dt); // frame-rate independent air drag → terminal velocity
       ctx.clearRect(0, 0, w, h);
       for (var i = 0; i < parts.length; i++) {
         var p = parts[i];
-        var vx, vy;
-        if (tiltOn) {                              // gyroscope gravity — particles stream downhill
-          vx = gravX * GRAV * (0.45 + p.par);
-          vy = gravY * GRAV * (0.45 + p.par);
-        } else {
-          vx = 0; vy = -(p.spd * 1.3);             // idle: gentle float upward
+        if (tiltOn) {                              // gyroscope gravity — accelerate downhill (real falling)
+          var k = 0.5 + p.par;                     // nearer particles fall faster (depth)
+          p.vx = p.vx * drag + gravX * ACC * k * dt;
+          p.vy = p.vy * drag + gravY * ACC * k * dt;
+          var sp = Math.hypot(p.vx, p.vy), term = TERM * k;
+          if (sp > term) { p.vx *= term / sp; p.vy *= term / sp; }
+        } else {                                   // idle: ease back to a gentle upward float
+          var e = Math.min(1, dt * 3);
+          p.vx += (0 - p.vx) * e;
+          p.vy += (-(p.spd * 1.3) - p.vy) * e;
         }
-        if (!reduceMotion) vx += Math.cos(t * 0.001 * p.swSpeed + p.swPhase) * (tiltOn ? 6 : p.sway * 0.5);
-        p.x += vx * dt; p.y += vy * dt;
+        p.x += p.vx * dt; p.y += p.vy * dt;
         p.x = wrap(p.x, w); p.y = wrap(p.y, h);
-        var ox = tiltOn ? 0 : nmx * p.par * 60;    // mouse parallax only when not tilting
+        var ox = tiltOn ? 0 : (nmx * p.par * 60 + (reduceMotion ? 0 : Math.cos(t * 0.001 * p.swSpeed + p.swPhase) * p.sway * 0.5));
         var oy = -scrollY * p.par + (tiltOn ? 0 : nmy * p.par * 50);
         shape(p, place(p.x, ox, w), place(p.y, oy, h), t);
       }
