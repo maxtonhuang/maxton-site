@@ -6,31 +6,37 @@
   <title>Maxton Huang — Software Engineer</title>
   <meta name="description" content="Maxton Huang — software engineering student building cloud-hosted web applications. Portfolio, projects, and public repositories." />
   <meta name="author" content="Maxton Huang" />
-  <meta name="theme-color" content="#04050d" />
+  <meta name="theme-color" content="#fff5fb" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Maxton Huang — Software Engineer" />
   <meta property="og:description" content="Software engineering student building cloud-hosted web applications." />
 
+  <!-- Fonts (CDN link only — no build step) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <!-- Inline SVG favicon (MH monogram) — no external request -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-size='30' font-weight='700' fill='white'%3EMH%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff5d8f'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-size='30' font-weight='700' fill='white'%3EMH%3C/text%3E%3C/svg%3E" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <a class="skip-link" href="#hero">Skip to content</a>
 
-  <!-- ===== Universal parallax background (spans the whole page) ===== -->
+  <!-- ===== Unified animated background (spans the whole page) ===== -->
   <div class="bg" aria-hidden="true">
-    <div class="bg__orbs">
-      <span class="orb orb--1" data-parallax="0.16"></span>
-      <span class="orb orb--2" data-parallax="0.30"></span>
-      <span class="orb orb--3" data-parallax="0.10"></span>
-      <span class="orb orb--4" data-parallax="0.22"></span>
+    <div class="bg__mesh">
+      <span class="blob blob--1" data-parallax="0.14"></span>
+      <span class="blob blob--2" data-parallax="0.26"></span>
+      <span class="blob blob--3" data-parallax="0.10"></span>
+      <span class="blob blob--4" data-parallax="0.20"></span>
+      <span class="blob blob--5" data-parallax="0.30"></span>
+      <span class="blob blob--6" data-parallax="0.16"></span>
     </div>
-    <canvas id="space" class="bg__stars"></canvas>
-    <div class="bg__vignette"></div>
+    <canvas id="confetti" class="bg__confetti"></canvas>
   </div>
 
   <!-- Scroll progress indicator -->
@@ -66,13 +72,12 @@
     <!-- HERO -->
     <section id="hero" class="hero">
       <canvas id="heroCanvas" class="hero__canvas" aria-hidden="true"></canvas>
-      <div class="hero__spotlight" aria-hidden="true"></div>
       <div class="container hero__inner reveal">
         <p class="hero__status">
           <span class="hero__status-dot" aria-hidden="true"></span>
           Available for software engineering internships
         </p>
-        <p class="hero__eyebrow" data-scramble>Hello, I'm</p>
+        <p class="hero__eyebrow">Hello, I'm</p>
         <h1 class="hero__name"><span class="hero__name-text" data-scramble>Maxton Huang</span></h1>
         <p class="hero__tagline">
           Software engineering student building practical, cloud-hosted web applications &mdash;
@@ -98,8 +103,8 @@
     <!-- ABOUT -->
     <section id="about" class="section">
       <div class="container container--narrow">
-        <p class="section__eyebrow" data-reveal data-scramble>About</p>
-        <h2 class="section__title" data-reveal data-scramble>A bit about me</h2>
+        <p class="section__eyebrow" data-reveal>About</p>
+        <h2 class="section__title" data-reveal data-decompose>A bit about me</h2>
         <div class="prose glass-panel" data-reveal>
           <p>
             I'm a software engineering student at the Singapore Institute of Technology,
@@ -124,8 +129,8 @@
     <!-- SKILLS -->
     <section id="skills" class="section">
       <div class="container">
-        <p class="section__eyebrow" data-reveal data-scramble>Skills</p>
-        <h2 class="section__title" data-reveal data-scramble>What I work with</h2>
+        <p class="section__eyebrow" data-reveal>Skills</p>
+        <h2 class="section__title" data-reveal data-decompose>What I work with</h2>
         <p class="section__lead" data-reveal>Areas of focus and the tools I reach for most often.</p>
 
         <div class="skills-grid">
@@ -171,8 +176,8 @@
     <!-- PROJECTS -->
     <section id="projects" class="section">
       <div class="container">
-        <p class="section__eyebrow" data-reveal data-scramble>Projects</p>
-        <h2 class="section__title" data-reveal data-scramble>Selected work</h2>
+        <p class="section__eyebrow" data-reveal>Projects</p>
+        <h2 class="section__title" data-reveal data-decompose>Selected work</h2>
         <p class="section__lead" data-reveal>A few highlights. More on my <a href="#repos">repositories</a> below.</p>
 
         <div class="projects-grid">
@@ -221,8 +226,8 @@
     <!-- REPOS (dynamic) -->
     <section id="repos" class="section">
       <div class="container">
-        <p class="section__eyebrow" data-reveal data-scramble>Repositories</p>
-        <h2 class="section__title" data-reveal data-scramble>From GitHub</h2>
+        <p class="section__eyebrow" data-reveal>Repositories</p>
+        <h2 class="section__title" data-reveal data-decompose>From GitHub</h2>
         <p class="section__lead" data-reveal>My most recently updated public repositories, fetched live.</p>
 
         <div id="repos-status" class="repos-status glass-panel" role="status" aria-live="polite" data-reveal>
@@ -236,8 +241,8 @@
     <!-- CONTACT -->
     <section id="contact" class="section">
       <div class="container container--narrow contact">
-        <p class="section__eyebrow" data-reveal data-scramble>Contact</p>
-        <h2 class="section__title" data-reveal data-scramble>Let's talk</h2>
+        <p class="section__eyebrow" data-reveal>Contact</p>
+        <h2 class="section__title" data-reveal data-decompose>Let's talk</h2>
         <p class="section__lead" data-reveal>
           Open to software engineering internships and graduate roles. The fastest way to reach me is email.
         </p>
