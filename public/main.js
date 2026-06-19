@@ -476,50 +476,60 @@
     }, { passive: true });
   }
 
-  /* ---- Device Orientation: tilt-to-parallax (mobile, opt-in button) ---- */
+  /* ---- Device Orientation: tilt-to-parallax (iOS button + Android auto) ---- */
   (function gyro() {
     var DOE = window.DeviceOrientationEvent;
+    if (!DOE) return;
     var fabStack = document.querySelector(".fab-stack");
-    if (!DOE || finePointer || !fabStack) return; // only offer on touch devices with sensors
-
+    var bgMesh = document.querySelector(".bg__mesh");
+    var isTouch = !finePointer || (navigator.maxTouchPoints || 0) > 0;
+    if (!isTouch) return; // desktop uses the mouse instead
+    var hasReq = typeof DOE.requestPermission === "function"; // true on iOS 13+
     var on = false;
+
+    function apply(gx, gy) {
+      nmx = gx; nmy = gy; // drives the confetti + globe canvases (when animating)
+      if (bgMesh) bgMesh.style.transform = "translate3d(" + (gx * 34).toFixed(1) + "px," + (gy * 34).toFixed(1) + "px,0)"; // moves the colourful blobs (always visible)
+    }
     function onOrient(e) {
       if (e.gamma == null && e.beta == null) return;
       var gx = Math.max(-1, Math.min(1, (e.gamma || 0) / 35));        // left-right tilt
       var gy = Math.max(-1, Math.min(1, ((e.beta || 0) - 40) / 35));  // front-back tilt
-      nmx = gx * 0.8; nmy = gy * 0.8; // drives confetti + globe parallax
+      apply(gx * 0.9, gy * 0.9);
     }
     function start() { window.addEventListener("deviceorientation", onOrient, true); on = true; }
-    function stop() { window.removeEventListener("deviceorientation", onOrient, true); on = false; nmx = 0; nmy = 0; }
+    function stop() { window.removeEventListener("deviceorientation", onOrient, true); on = false; apply(0, 0); }
 
-    var btn = document.createElement("button");
-    btn.className = "fab"; btn.type = "button";
-    btn.setAttribute("aria-pressed", "false");
-    btn.setAttribute("aria-label", "Enable tilt motion");
-    btn.title = "Tilt motion (gyroscope)";
-    btn.innerHTML = '<span class="fab__note" aria-hidden="true">📱</span>';
-    fabStack.insertBefore(btn, fabStack.firstChild);
+    var btn = null;
+    if (fabStack) {
+      btn = document.createElement("button");
+      btn.className = "fab"; btn.type = "button";
+      btn.setAttribute("aria-pressed", "false");
+      btn.setAttribute("aria-label", "Toggle tilt motion");
+      btn.title = "Tilt motion (gyroscope)";
+      btn.innerHTML = '<span class="fab__note" aria-hidden="true">📱</span>';
+      fabStack.insertBefore(btn, fabStack.firstChild);
+      btn.addEventListener("click", function () {
+        if (on) { stop(); btn.classList.remove("is-on"); btn.setAttribute("aria-pressed", "false"); showToast("Tilt off"); return; }
+        if (hasReq) {
+          DOE.requestPermission().then(function (s) {
+            if (s === "granted") { start(); btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); showToast("Tilt your phone 🙂"); }
+            else { showToast("Motion access was blocked by the browser"); }
+          }).catch(function () { showToast("Couldn't access motion sensors"); });
+        } else {
+          start(); btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); showToast("Tilt your phone 🙂");
+        }
+      });
+    }
 
-    btn.addEventListener("click", function () {
-      if (on) {
-        stop(); btn.classList.remove("is-on"); btn.setAttribute("aria-pressed", "false"); showToast("Tilt off");
-        return;
-      }
-      if (typeof DOE.requestPermission === "function") {
-        // iOS: shows the native "Motion & Orientation" prompt (requires this tap)
-        DOE.requestPermission().then(function (s) {
-          if (s === "granted") {
-            start(); btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true");
-            showToast("Tilt your phone to move the background 🙂");
-          } else {
-            showToast("Motion blocked — enable Settings ▸ Safari ▸ Motion & Orientation Access");
-          }
-        }).catch(function () { showToast("Couldn't access motion sensors"); });
-      } else {
-        start(); btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true");
-        showToast("Tilt your phone to move the background 🙂");
-      }
-    });
+    if (!hasReq) {
+      // Android & others: no permission needed — turn it on automatically
+      start();
+      if (btn) { btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true"); }
+    } else if (btn) {
+      // iOS: can't auto-prompt; nudge the user to tap the button once
+      window.setTimeout(function () { if (!on) showToast("Tap 📱 (bottom-right) to tilt the background"); }, 1600);
+    }
   })();
 
   /* ---- Web Share API (+ Clipboard fallback) ---- */
