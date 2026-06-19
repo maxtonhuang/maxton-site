@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maxton Huang — Software Engineer</title>
+  <meta name="description" content="Maxton Huang — software engineering student building cloud-hosted web applications. Portfolio, projects, and public repositories." />
+  <meta name="author" content="Maxton Huang" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Maxton Huang — Software Engineer" />
+  <meta property="og:description" content="Software engineering student building cloud-hosted web applications." />
+
+  <!-- Inline SVG favicon (MH monogram) — no external request -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-size='30' font-weight='700' fill='white'%3EMH%3C/text%3E%3C/svg%3E" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#hero">Skip to content</a>
+
+  <header class="site-header" id="top">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav__brand" href="#hero" aria-label="Maxton Huang — home">
+        <span class="nav__monogram" aria-hidden="true">MH</span>
+        <span class="nav__name">Maxton&nbsp;Huang</span>
+      </a>
+
+      <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Open menu">
+        <span class="nav__toggle-bar" aria-hidden="true"></span>
+        <span class="nav__toggle-bar" aria-hidden="true"></span>
+        <span class="nav__toggle-bar" aria-hidden="true"></span>
+      </button>
+
+      <ul class="nav__menu" id="nav-menu">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#repos">Repositories</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="hero reveal">
+      <div class="container">
+        <p class="hero__eyebrow">Hello, I'm</p>
+        <h1 class="hero__name">Maxton Huang</h1>
+        <p class="hero__tagline">
+          Software engineering student building practical, cloud-hosted web applications &mdash;
+          end to end, from clean code to deployment.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="mailto:maxton.huang@gmail.com">
+            <span class="btn__icon" aria-hidden="true">✉</span> Email me
+          </a>
+          <a class="btn btn--ghost" href="https://github.com/maxtonhuang" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+          <!-- TODO: replace with your real LinkedIn URL -->
+          <a class="btn btn--ghost" href="https://www.linkedin.com/in/your-handle" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+        </div>
+        <a class="hero__scroll" href="#about" aria-label="Scroll to About">
+          <span aria-hidden="true">↓</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section reveal">
+      <div class="container container--narrow">
+        <p class="section__eyebrow">About</p>
+        <h2 class="section__title">A bit about me</h2>
+        <div class="prose">
+          <p>
+            I'm a software engineering student at the Singapore Institute of Technology,
+            focused on building practical web applications and shipping them to the cloud.
+            Recent work spans full-stack Python apps, service-oriented architecture, and a
+            C++ game project &mdash; so I'm comfortable moving between high-level product code
+            and lower-level systems.
+          </p>
+          <p>
+            I care about writing clean, maintainable code, designing sensible architecture,
+            and owning a project from first commit to live deployment. I'm currently looking
+            for software engineering internships and graduate roles where I can keep learning
+            and contribute from day one.
+          </p>
+          <p class="prose__note">
+            <!-- TODO: rewrite this bio in your own voice before sharing with employers. -->
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="section section--alt reveal">
+      <div class="container">
+        <p class="section__eyebrow">Skills</p>
+        <h2 class="section__title">What I work with</h2>
+        <p class="section__lead">Areas of focus and the tools I reach for most often.</p>
+
+        <div class="skills-grid">
+          <article class="skill-card">
+            <h3 class="skill-card__title">Languages</h3>
+            <ul class="tag-list">
+              <li>Python</li>
+              <li>C++</li>
+              <li>JavaScript</li>
+              <li>HTML &amp; CSS</li>
+              <li>SQL</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h3 class="skill-card__title">Web &amp; Cloud</h3>
+            <ul class="tag-list">
+              <li>Streamlit</li>
+              <li>REST APIs</li>
+              <li>Cloud deployment</li>
+              <li>CI/CD · GitHub Actions</li>
+              <li>Responsive UI</li>
+            </ul>
+          </article>
+
+          <article class="skill-card">
+            <h3 class="skill-card__title">Practices</h3>
+            <ul class="tag-list">
+              <li>Service-oriented architecture</li>
+              <li>Git &amp; GitHub</li>
+              <li>Modular design</li>
+              <li>Secrets management</li>
+              <li>Testing</li>
+            </ul>
+          </article>
+        </div>
+        <p class="section__hint">
+          <!-- TODO: trim/expand these to match what you actually want to be hired for. -->
+        </p>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="section reveal">
+      <div class="container">
+        <p class="section__eyebrow">Projects</p>
+        <h2 class="section__title">Selected work</h2>
+        <p class="section__lead">A few highlights. More on my <a href="#repos">repositories</a> below.</p>
+
+        <div class="projects-grid">
+          <article class="project-card">
+            <h3 class="project-card__title">Resume Analyzer</h3>
+            <p class="project-card__desc">
+              Cloud-hosted web app that parses and analyzes resumes to surface key skills and gaps.
+            </p>
+            <div class="project-card__meta">
+              <span class="lang"><span class="lang__dot" style="--lang:#3572A5"></span>Python</span>
+            </div>
+            <a class="project-card__link" href="https://github.com/maxtonhuang/Resume-Analyzer-Web-App" target="_blank" rel="noopener noreferrer">
+              View project <span aria-hidden="true">→</span>
+            </a>
+          </article>
+
+          <article class="project-card">
+            <h3 class="project-card__title">Job Searcher</h3>
+            <p class="project-card__desc">
+              A web application that aggregates and filters job listings to streamline the search.
+            </p>
+            <div class="project-card__meta">
+              <span class="lang"><span class="lang__dot" style="--lang:#3572A5"></span>Python</span>
+            </div>
+            <a class="project-card__link" href="https://github.com/maxtonhuang/Job-Searcher-Web-App" target="_blank" rel="noopener noreferrer">
+              View project <span aria-hidden="true">→</span>
+            </a>
+          </article>
+
+          <article class="project-card">
+            <h3 class="project-card__title">HighOctane</h3>
+            <p class="project-card__desc">
+              A C++ game project &mdash; hands-on systems and real-time programming beyond the web stack.
+            </p>
+            <div class="project-card__meta">
+              <span class="lang"><span class="lang__dot" style="--lang:#f34b7d"></span>C++</span>
+            </div>
+            <a class="project-card__link" href="https://github.com/maxtonhuang/HighOctane" target="_blank" rel="noopener noreferrer">
+              View project <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPOS (dynamic) -->
+    <section id="repos" class="section section--alt reveal">
+      <div class="container">
+        <p class="section__eyebrow">Repositories</p>
+        <h2 class="section__title">From GitHub</h2>
+        <p class="section__lead">My most recently updated public repositories, fetched live.</p>
+
+        <div id="repos-status" class="repos-status" role="status" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span> Loading repositories&hellip;
+        </div>
+
+        <div id="repos-grid" class="repos-grid" hidden></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section reveal">
+      <div class="container container--narrow contact">
+        <p class="section__eyebrow">Contact</p>
+        <h2 class="section__title">Let's talk</h2>
+        <p class="section__lead">
+          Open to software engineering internships and graduate roles. The fastest way to reach me is email.
+        </p>
+        <div class="contact__links">
+          <a class="contact__link" href="mailto:maxton.huang@gmail.com">
+            <span class="contact__label">Email</span>
+            <span class="contact__value">maxton.huang@gmail.com</span>
+          </a>
+          <a class="contact__link" href="https://github.com/maxtonhuang" target="_blank" rel="noopener noreferrer">
+            <span class="contact__label">GitHub</span>
+            <span class="contact__value">@maxtonhuang</span>
+          </a>
+          <!-- TODO: replace with your real LinkedIn URL -->
+          <a class="contact__link" href="https://www.linkedin.com/in/your-handle" target="_blank" rel="noopener noreferrer">
+            <span class="contact__label">LinkedIn</span>
+            <span class="contact__value">linkedin.com/in/your-handle</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Maxton Huang. Built with plain HTML, CSS &amp; vanilla JS.</p>
+      <a href="#top" class="site-footer__top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
+</body>
+</html>
