@@ -45,6 +45,16 @@
   <!-- Cursor spotlight (pointer devices only) -->
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
+  <!-- Floating controls (HTML5 Web Audio toggle) -->
+  <div class="fab-stack">
+    <button id="soundToggle" class="fab" type="button" aria-pressed="false" aria-label="Enable interface sounds" title="Interface sounds (Web Audio)">
+      <span class="fab__note" aria-hidden="true">♪</span>
+    </button>
+  </div>
+
+  <!-- Toast for share / clipboard feedback -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
   <header class="site-header" id="top">
     <nav class="nav" aria-label="Primary">
       <a class="nav__brand" href="#hero" aria-label="Maxton Huang — home">
@@ -267,7 +277,10 @@
   <footer class="site-footer">
     <div class="container">
       <p>&copy; <span id="year"></span> Maxton Huang. Built with plain HTML, CSS &amp; vanilla JS.</p>
-      <a href="#top" class="site-footer__top">Back to top ↑</a>
+      <div class="site-footer__actions">
+        <button id="shareBtn" class="footer-share" type="button">Share ↗</button>
+        <a href="#top" class="site-footer__top">Back to top ↑</a>
+      </div>
     </div>
   </footer>
 

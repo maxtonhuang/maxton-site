@@ -383,6 +383,110 @@
   window.addEventListener("resize", updateScroll, { passive: true });
 
   /* ===================================================
+     HTML5 EXTRAS — Web Audio, Device Orientation, Web Share
+     =================================================== */
+  /* ---- Toast ---- */
+  var toastEl = document.getElementById("toast"), toastTimer = 0;
+  function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg; toastEl.hidden = false;
+    window.requestAnimationFrame(function () { toastEl.classList.add("show"); });
+    clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () {
+      toastEl.classList.remove("show");
+      window.setTimeout(function () { toastEl.hidden = true; }, 320);
+    }, 2300);
+  }
+
+  /* ---- Web Audio: synthesized UI notes ---- */
+  var actx = null, master = null, audioOn = false, noteIdx = 0, lastHover = 0;
+  var SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5]; // C major pentatonic-ish
+  var sndBtn = document.getElementById("soundToggle");
+  function ensureAudio() {
+    if (actx) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    actx = new AC();
+    master = actx.createGain(); master.gain.value = 0.5; master.connect(actx.destination);
+  }
+  function blip(freq, dur, type) {
+    if (!audioOn || !actx) return;
+    var o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+    o.type = type || "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.16, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + (dur || 0.18));
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + (dur || 0.18) + 0.02);
+  }
+  function hoverNote() {
+    var now = (window.performance && performance.now()) || 0;
+    if (now - lastHover < 70) return;
+    lastHover = now;
+    blip(SCALE[noteIdx % SCALE.length], 0.16, "triangle"); noteIdx++;
+  }
+  if (sndBtn) {
+    sndBtn.addEventListener("click", function () {
+      ensureAudio();
+      if (actx && actx.state === "suspended") actx.resume();
+      audioOn = !audioOn;
+      sndBtn.setAttribute("aria-pressed", audioOn ? "true" : "false");
+      sndBtn.classList.toggle("is-on", audioOn);
+      sndBtn.setAttribute("aria-label", audioOn ? "Mute interface sounds" : "Enable interface sounds");
+      if (audioOn) { blip(659.25, 0.22, "sine"); showToast("Sound on — hover around ✨"); }
+      else showToast("Sound off");
+    });
+    var SOUND_SEL = "a, button, .glass-card, .tag-list li";
+    document.addEventListener("pointerover", function (e) {
+      if (audioOn && e.target.closest && e.target.closest(SOUND_SEL)) hoverNote();
+    }, { passive: true });
+    document.addEventListener("click", function (e) {
+      if (audioOn && e.target.closest && e.target.closest(SOUND_SEL) && !e.target.closest("#soundToggle")) {
+        blip(SCALE[(noteIdx + 2) % SCALE.length], 0.24, "sine"); noteIdx++;
+      }
+    }, { passive: true });
+  }
+
+  /* ---- Device Orientation: tilt-to-parallax on mobile ---- */
+  function onOrient(e) {
+    if (e.gamma == null && e.beta == null) return;
+    var gx = Math.max(-1, Math.min(1, (e.gamma || 0) / 45));
+    var gy = Math.max(-1, Math.min(1, ((e.beta || 0) - 45) / 45));
+    nmx = gx * 0.5; nmy = gy * 0.5; // feed shared parallax used by confetti + globe
+  }
+  function startOrient() { window.addEventListener("deviceorientation", onOrient, true); }
+  var DOE = window.DeviceOrientationEvent;
+  if (DOE && typeof DOE.requestPermission === "function") {
+    // iOS: needs a user gesture to request permission
+    var askedOrient = false;
+    var askOrient = function () {
+      if (askedOrient) return; askedOrient = true;
+      document.removeEventListener("pointerdown", askOrient);
+      DOE.requestPermission().then(function (s) { if (s === "granted") startOrient(); }).catch(function () {});
+    };
+    document.addEventListener("pointerdown", askOrient, { passive: true });
+  } else if (DOE) {
+    startOrient();
+  }
+
+  /* ---- Web Share API (+ Clipboard fallback) ---- */
+  var shareBtn = document.getElementById("shareBtn");
+  if (shareBtn) {
+    shareBtn.addEventListener("click", function () {
+      var data = { title: "Maxton Huang — Software Engineer", text: "Check out my portfolio", url: location.href };
+      if (navigator.share) {
+        navigator.share(data).catch(function () {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(location.href)
+          .then(function () { showToast("Link copied to clipboard!"); })
+          .catch(function () { showToast("Couldn't copy — " + location.href); });
+      } else {
+        showToast(location.href);
+      }
+    });
+  }
+
+  /* ===================================================
      REPOSITORIES (live fetch)
      =================================================== */
   var statusEl = document.getElementById("repos-status");
