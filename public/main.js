@@ -288,8 +288,8 @@
         var p = parts[i];
         var fy = reduceMotion ? 0 : t * 0.001 * p.spd;
         var sx = reduceMotion ? 0 : Math.sin(t * 0.001 * p.swSpeed + p.swPhase) * p.sway;
-        var x = wrap(p.x + sx + nmx * p.par * 50, w + 80) - 40;
-        var y = wrap(p.y - fy - scrollY * p.par + nmy * p.par * 40, h + 80) - 40;
+        var x = wrap(p.x + sx + nmx * p.par * 90, w + 80) - 40;
+        var y = wrap(p.y - fy - scrollY * p.par + nmy * p.par * 80, h + 80) - 40;
         shape(p, x, y, t);
       }
     }
@@ -476,27 +476,51 @@
     }, { passive: true });
   }
 
-  /* ---- Device Orientation: tilt-to-parallax on mobile ---- */
-  function onOrient(e) {
-    if (e.gamma == null && e.beta == null) return;
-    var gx = Math.max(-1, Math.min(1, (e.gamma || 0) / 45));
-    var gy = Math.max(-1, Math.min(1, ((e.beta || 0) - 45) / 45));
-    nmx = gx * 0.5; nmy = gy * 0.5; // feed shared parallax used by confetti + globe
-  }
-  function startOrient() { window.addEventListener("deviceorientation", onOrient, true); }
-  var DOE = window.DeviceOrientationEvent;
-  if (DOE && typeof DOE.requestPermission === "function") {
-    // iOS: needs a user gesture to request permission
-    var askedOrient = false;
-    var askOrient = function () {
-      if (askedOrient) return; askedOrient = true;
-      document.removeEventListener("pointerdown", askOrient);
-      DOE.requestPermission().then(function (s) { if (s === "granted") startOrient(); }).catch(function () {});
-    };
-    document.addEventListener("pointerdown", askOrient, { passive: true });
-  } else if (DOE) {
-    startOrient();
-  }
+  /* ---- Device Orientation: tilt-to-parallax (mobile, opt-in button) ---- */
+  (function gyro() {
+    var DOE = window.DeviceOrientationEvent;
+    var fabStack = document.querySelector(".fab-stack");
+    if (!DOE || finePointer || !fabStack) return; // only offer on touch devices with sensors
+
+    var on = false;
+    function onOrient(e) {
+      if (e.gamma == null && e.beta == null) return;
+      var gx = Math.max(-1, Math.min(1, (e.gamma || 0) / 35));        // left-right tilt
+      var gy = Math.max(-1, Math.min(1, ((e.beta || 0) - 40) / 35));  // front-back tilt
+      nmx = gx * 0.8; nmy = gy * 0.8; // drives confetti + globe parallax
+    }
+    function start() { window.addEventListener("deviceorientation", onOrient, true); on = true; }
+    function stop() { window.removeEventListener("deviceorientation", onOrient, true); on = false; nmx = 0; nmy = 0; }
+
+    var btn = document.createElement("button");
+    btn.className = "fab"; btn.type = "button";
+    btn.setAttribute("aria-pressed", "false");
+    btn.setAttribute("aria-label", "Enable tilt motion");
+    btn.title = "Tilt motion (gyroscope)";
+    btn.innerHTML = '<span class="fab__note" aria-hidden="true">📱</span>';
+    fabStack.insertBefore(btn, fabStack.firstChild);
+
+    btn.addEventListener("click", function () {
+      if (on) {
+        stop(); btn.classList.remove("is-on"); btn.setAttribute("aria-pressed", "false"); showToast("Tilt off");
+        return;
+      }
+      if (typeof DOE.requestPermission === "function") {
+        // iOS: shows the native "Motion & Orientation" prompt (requires this tap)
+        DOE.requestPermission().then(function (s) {
+          if (s === "granted") {
+            start(); btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true");
+            showToast("Tilt your phone to move the background 🙂");
+          } else {
+            showToast("Motion blocked — enable Settings ▸ Safari ▸ Motion & Orientation Access");
+          }
+        }).catch(function () { showToast("Couldn't access motion sensors"); });
+      } else {
+        start(); btn.classList.add("is-on"); btn.setAttribute("aria-pressed", "true");
+        showToast("Tilt your phone to move the background 🙂");
+      }
+    });
+  })();
 
   /* ---- Web Share API (+ Clipboard fallback) ---- */
   var shareBtn = document.getElementById("shareBtn");
