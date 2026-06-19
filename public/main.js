@@ -284,7 +284,7 @@
       }
       ctx.restore(); ctx.globalAlpha = 1;
     }
-    var ACC = 2000, TERM = 950, MARGIN = 60;
+    var ACC = 1050, TERM = 520, MARGIN = 60;
     function place(base, off, size) { var W = size + MARGIN * 2; return wrap(base + off + MARGIN, W) - MARGIN; }
     function render(t) {
       var dt = lastT ? Math.min(60, t - lastT) / 1000 : 0.016; lastT = t;
