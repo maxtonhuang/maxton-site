@@ -80,10 +80,11 @@
       decomposeItems.push({ el: el, letters: letters });
     });
   }
-  // Composed across a wide central band; only scatters near the very top
-  // (when sliding under the header) or when first entering from the bottom.
+  // Composed across a comfortable band around the centre, then scatters as the
+  // heading travels toward the top or bottom of the viewport (visibly, before
+  // it slips under the header / off-screen). Nav lands headings inside the band.
   function updateDecompose() {
-    var vh = window.innerHeight, LOW = 0.07, HIGH = 0.84;
+    var vh = window.innerHeight, LOW = 0.22, HIGH = 0.58;
     for (var i = 0; i < decomposeItems.length; i++) {
       var it = decomposeItems[i], rect = it.el.getBoundingClientRect();
       var p = (rect.top + rect.height / 2) / vh;             // 0 = top of viewport, 1 = bottom
@@ -403,7 +404,7 @@
       } else {
         var headingEl = el.querySelector("[data-decompose], .section__title") || el;
         var top = headingEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
-        y = top - window.innerHeight * 0.28; // heading rests ~28% down — solidly composed
+        y = top - window.innerHeight * 0.34; // heading rests ~34% down — centre of the composed band
       }
       window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion ? "auto" : "smooth" });
       if (history.replaceState) history.replaceState(null, "", href);
