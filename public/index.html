@@ -20,6 +20,12 @@
 <body>
   <a class="skip-link" href="#hero">Skip to content</a>
 
+  <!-- Scroll progress indicator -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- Cursor spotlight (pointer devices only) -->
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
   <header class="site-header" id="top">
     <nav class="nav" aria-label="Primary">
       <a class="nav__brand" href="#hero" aria-label="Maxton Huang — home">
@@ -45,22 +51,28 @@
 
   <main>
     <!-- HERO -->
-    <section id="hero" class="hero reveal">
-      <div class="container">
+    <section id="hero" class="hero">
+      <canvas id="heroCanvas" class="hero__canvas" aria-hidden="true"></canvas>
+      <div class="hero__overlay" aria-hidden="true"></div>
+      <div class="container hero__inner reveal">
+        <p class="hero__status">
+          <span class="hero__status-dot" aria-hidden="true"></span>
+          Available for software engineering internships
+        </p>
         <p class="hero__eyebrow">Hello, I'm</p>
-        <h1 class="hero__name">Maxton Huang</h1>
+        <h1 class="hero__name"><span class="hero__name-text">Maxton Huang</span></h1>
         <p class="hero__tagline">
           Software engineering student building practical, cloud-hosted web applications &mdash;
           end to end, from clean code to deployment.
         </p>
         <div class="hero__actions">
-          <a class="btn btn--primary" href="mailto:maxton.huang@gmail.com">
+          <a class="btn btn--primary magnetic" href="mailto:maxton.huang@gmail.com">
             <span class="btn__icon" aria-hidden="true">✉</span> Email me
           </a>
-          <a class="btn btn--ghost" href="https://github.com/maxtonhuang" target="_blank" rel="noopener noreferrer">
+          <a class="btn btn--ghost magnetic" href="https://github.com/maxtonhuang" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
-          <a class="btn btn--ghost" href="https://www.linkedin.com/in/maxton-huang" target="_blank" rel="noopener noreferrer">
+          <a class="btn btn--ghost magnetic" href="https://www.linkedin.com/in/maxton-huang" target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
         </div>
@@ -104,7 +116,7 @@
         <p class="section__lead">Areas of focus and the tools I reach for most often.</p>
 
         <div class="skills-grid">
-          <article class="skill-card">
+          <article class="skill-card" data-tilt>
             <h3 class="skill-card__title">Languages</h3>
             <ul class="tag-list">
               <li>Python</li>
@@ -115,7 +127,7 @@
             </ul>
           </article>
 
-          <article class="skill-card">
+          <article class="skill-card" data-tilt>
             <h3 class="skill-card__title">Web &amp; Cloud</h3>
             <ul class="tag-list">
               <li>Streamlit</li>
@@ -126,7 +138,7 @@
             </ul>
           </article>
 
-          <article class="skill-card">
+          <article class="skill-card" data-tilt>
             <h3 class="skill-card__title">Practices</h3>
             <ul class="tag-list">
               <li>Service-oriented architecture</li>
@@ -151,7 +163,7 @@
         <p class="section__lead">A few highlights. More on my <a href="#repos">repositories</a> below.</p>
 
         <div class="projects-grid">
-          <article class="project-card">
+          <article class="project-card" data-tilt>
             <h3 class="project-card__title">Resume Analyzer</h3>
             <p class="project-card__desc">
               Cloud-hosted web app that parses and analyzes resumes to surface key skills and gaps.
@@ -164,7 +176,7 @@
             </a>
           </article>
 
-          <article class="project-card">
+          <article class="project-card" data-tilt>
             <h3 class="project-card__title">Job Searcher</h3>
             <p class="project-card__desc">
               A web application that aggregates and filters job listings to streamline the search.
@@ -177,7 +189,7 @@
             </a>
           </article>
 
-          <article class="project-card">
+          <article class="project-card" data-tilt>
             <h3 class="project-card__title">HighOctane</h3>
             <p class="project-card__desc">
               A C++ game project &mdash; hands-on systems and real-time programming beyond the web stack.
@@ -217,15 +229,15 @@
           Open to software engineering internships and graduate roles. The fastest way to reach me is email.
         </p>
         <div class="contact__links">
-          <a class="contact__link" href="mailto:maxton.huang@gmail.com">
+          <a class="contact__link" data-tilt href="mailto:maxton.huang@gmail.com">
             <span class="contact__label">Email</span>
             <span class="contact__value">maxton.huang@gmail.com</span>
           </a>
-          <a class="contact__link" href="https://github.com/maxtonhuang" target="_blank" rel="noopener noreferrer">
+          <a class="contact__link" data-tilt href="https://github.com/maxtonhuang" target="_blank" rel="noopener noreferrer">
             <span class="contact__label">GitHub</span>
             <span class="contact__value">@maxtonhuang</span>
           </a>
-          <a class="contact__link" href="https://www.linkedin.com/in/maxton-huang" target="_blank" rel="noopener noreferrer">
+          <a class="contact__link" data-tilt href="https://www.linkedin.com/in/maxton-huang" target="_blank" rel="noopener noreferrer">
             <span class="contact__label">LinkedIn</span>
             <span class="contact__value">linkedin.com/in/maxton-huang</span>
           </a>
