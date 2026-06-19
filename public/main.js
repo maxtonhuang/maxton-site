@@ -310,19 +310,20 @@
         shape(p, place(p.x, ox, w), place(p.y, oy, h), t);
       }
     }
-    var running = false, rafId = 0;
+    var running = false, rafId = 0, motionWanted = !reduceMotion;
     function frame(t) { if (!running) return; render(t); rafId = window.requestAnimationFrame(frame); }
-    function start() { if (running) return; running = true; rafId = window.requestAnimationFrame(frame); }
-    function stop() { running = false; if (rafId) window.cancelAnimationFrame(rafId); }
+    function run() { if (running) return; lastT = 0; running = true; rafId = window.requestAnimationFrame(frame); }
+    function halt() { running = false; if (rafId) window.cancelAnimationFrame(rafId); }
+    // Tilt can force the loop on even under Reduce Motion (the user opted in by enabling tilt)
+    window.__confettiMotion = function (on) { motionWanted = on; if (on) { if (!document.hidden) run(); } else { halt(); render(0); } };
     var rRaf = 0;
     window.addEventListener("resize", function () {
       if (rRaf) window.cancelAnimationFrame(rRaf);
       rRaf = window.requestAnimationFrame(function () { resize(); if (!running) render(0); });
     });
+    document.addEventListener("visibilitychange", function () { if (document.hidden) halt(); else if (motionWanted) run(); });
     resize();
-    if (reduceMotion) { render(0); return; }
-    document.addEventListener("visibilitychange", function () { document.hidden ? stop() : start(); });
-    start();
+    if (motionWanted) run(); else render(0);
   })();
 
   /* ===================================================
@@ -392,10 +393,16 @@
       resizeRaf = window.requestAnimationFrame(function () { smallScreen = window.matchMedia("(max-width: 720px)").matches; resize(); if (reduceMotion || !running) draw(); });
     });
     resize();
+    var forced = false; // tilt can force the loop on under Reduce Motion
+    window.__globeMotion = function (on) {
+      forced = on;
+      if (on) { running = true; if (!rafId) rafId = window.requestAnimationFrame(frame); }
+      else if (reduceMotion) { stop(); curMX = 0.5; curMY = -0.25; autoY = 0.6; draw(); }
+    };
     if (reduceMotion) { curMX = 0.5; curMY = -0.25; autoY = 0.6; draw(); return; }
     document.addEventListener("visibilitychange", function () { document.hidden ? stop() : start(); });
     if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entries) { entries.forEach(function (en) { en.isIntersecting ? start() : stop(); }); }, { threshold: 0.01 }).observe(canvas);
+      new IntersectionObserver(function (entries) { entries.forEach(function (en) { en.isIntersecting ? start() : (forced ? null : stop()); }); }, { threshold: 0.01 }).observe(canvas);
     } else { start(); }
   })();
 
@@ -514,8 +521,18 @@
       var gy = Math.sin((e.beta || 0) * Math.PI / 180);   // screen-plane gravity Y (up-down tilt)
       apply(Math.max(-1, Math.min(1, gx)), Math.max(-1, Math.min(1, gy)));
     }
-    function start() { window.addEventListener("deviceorientation", onOrient, true); on = true; tiltOn = true; }
-    function stop() { window.removeEventListener("deviceorientation", onOrient, true); on = false; tiltOn = false; apply(0, 0); }
+    function start() {
+      window.addEventListener("deviceorientation", onOrient, true);
+      on = true; tiltOn = true;
+      if (window.__confettiMotion) window.__confettiMotion(true);  // run the loop even if Reduce Motion is on
+      if (window.__globeMotion) window.__globeMotion(true);
+    }
+    function stop() {
+      window.removeEventListener("deviceorientation", onOrient, true);
+      on = false; tiltOn = false; apply(0, 0);
+      if (window.__confettiMotion) window.__confettiMotion(!reduceMotion);
+      if (window.__globeMotion) window.__globeMotion(!reduceMotion);
+    }
 
     var btn = null;
     if (fabStack) {
