@@ -80,15 +80,20 @@
       decomposeItems.push({ el: el, letters: letters });
     });
   }
+  // Composed across a wide central band; only scatters near the very top
+  // (when sliding under the header) or when first entering from the bottom.
   function updateDecompose() {
-    var vh = window.innerHeight;
+    var vh = window.innerHeight, LOW = 0.07, HIGH = 0.84;
     for (var i = 0; i < decomposeItems.length; i++) {
       var it = decomposeItems[i], rect = it.el.getBoundingClientRect();
-      var d = (rect.top + rect.height / 2 - vh / 2) / (vh / 2); // -1..1, 0 = centered
-      var amt = Math.min(1, Math.abs(d)); amt *= amt;
+      var p = (rect.top + rect.height / 2) / vh;             // 0 = top of viewport, 1 = bottom
+      var raw = p < LOW ? (LOW - p) / LOW : (p > HIGH ? (p - HIGH) / (1 - HIGH) : 0);
+      raw = raw < 0 ? 0 : raw > 1 ? 1 : raw;
+      var amt = raw * raw * (3 - 2 * raw);                   // smoothstep ease
+      var dir = p < LOW ? -1 : (p > HIGH ? 1 : 0);
       for (var j = 0; j < it.letters.length; j++) {
         var L = it.letters[j];
-        var tx = L.dx * amt * 130, ty = L.dy * amt * 90 + d * amt * 50, rot = L.rot * amt * 95, sc = 1 - amt * 0.45;
+        var tx = L.dx * amt * 130, ty = L.dy * amt * 85 + dir * amt * 45, rot = L.rot * amt * 95, sc = 1 - amt * 0.45;
         L.s.style.transform = "translate(" + tx.toFixed(1) + "px," + ty.toFixed(1) + "px) rotate(" + rot.toFixed(1) + "deg) scale(" + sc.toFixed(2) + ")";
         L.s.style.opacity = (1 - amt * 0.78).toFixed(2);
       }
@@ -381,6 +386,29 @@
   updateScroll();
   window.addEventListener("scroll", requestScroll, { passive: true });
   window.addEventListener("resize", updateScroll, { passive: true });
+
+  /* ---- Anchor navigation: land each heading inside the composed band ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    if (a.classList.contains("skip-link")) return; // keep native a11y behaviour
+    a.addEventListener("click", function (e) {
+      var href = a.getAttribute("href");
+      if (!href || href === "#") return;
+      var id = href.slice(1);
+      var el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      var y;
+      if (id === "top" || id === "hero") {
+        y = 0;
+      } else {
+        var headingEl = el.querySelector("[data-decompose], .section__title") || el;
+        var top = headingEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
+        y = top - window.innerHeight * 0.28; // heading rests ~28% down — solidly composed
+      }
+      window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion ? "auto" : "smooth" });
+      if (history.replaceState) history.replaceState(null, "", href);
+    });
+  });
 
   /* ===================================================
      HTML5 EXTRAS — Web Audio, Device Orientation, Web Share
